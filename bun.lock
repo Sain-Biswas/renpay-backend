@@ -7,7 +7,7 @@
         "@hono/zod-validator": "^0.4.2",
         "@prisma/client": "^6.2.1",
         "bcryptjs": "^2.4.3",
-        "hono": "^4.6.18",
+        "hono": "^4.6.19",
         "zod": "^3.24.1",
       },
       "devDependencies": {
@@ -46,7 +46,7 @@
 
     "fsevents": ["fsevents@2.3.3", "", { "os": "darwin" }, "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="],
 
-    "hono": ["hono@4.6.18", "", {}, "sha512-Fu7hEPvdwtPG8LqSAiPn8p8HjD+PDxrP/HVnwRBnwtVKOn5zDDKsw0ma2Xt58oq97Rlp3t/mRNADEV/Ym6cDng=="],
+    "hono": ["hono@4.6.19", "", {}, "sha512-Xw5DwU2cewEsQ1DkDCdy6aBJkEBARl5loovoL1gL3/gw81RdaPbXrNJYp3LoQpzpJ7ECC/1OFi/vn3UZTLHFEw=="],
 
     "prisma": ["prisma@6.2.1", "", { "dependencies": { "@prisma/engines": "6.2.1" }, "optionalDependencies": { "fsevents": "2.3.3" }, "bin": { "prisma": "build/index.js" } }, "sha512-hhyM0H13pQleQ+br4CkzGizS5I0oInoeTw3JfLw1BRZduBSQxPILlJLwi+46wZzj9Je7ndyQEMGw/n5cN2fknA=="],
 

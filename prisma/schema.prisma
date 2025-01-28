@@ -25,8 +25,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sendingTransaction    Transactions[] @relation("sended")
-  recievingTransactions Transactions[] @relation("recieved")
+  sendingTransaction   Transactions[] @relation("sended", references: [id])
+  recievingTransactions Transactions[] @relation("recieved", references: [id])
 }
 
 model Transactions {
