@@ -28,9 +28,7 @@ transactionRouter.post("/", zValidator("json", transactionSchema), async (c) => 
       );
     }
 
-
-    const token = await getSignedCookie(c,COOKIE_PRIVATE_SECRET, "auth_token");
-    
+    const token = await getSignedCookie(c, COOKIE_PRIVATE_SECRET, "auth_token");
 
     if (!token) {
       return c.json(
@@ -44,13 +42,16 @@ transactionRouter.post("/", zValidator("json", transactionSchema), async (c) => 
 
     let decoded;
     try {
-        decoded = await verify(token, JWT_PRIVATE_SECRET);
-      } catch (error) {
-        return c.json({
+      decoded = await verify(token, JWT_PRIVATE_SECRET);
+    } catch (error) {
+      return c.json(
+        {
           success: false,
           error: "Invalid or expired token.",
-        }, 401);
-      }
+        },
+        401
+      );
+    }
 
     const senderId = decoded.id;
 
@@ -61,10 +62,12 @@ transactionRouter.post("/", zValidator("json", transactionSchema), async (c) => 
     if (!senderDetails) {
       return c.json(
         { 
-        success: false, 
-        error: "Sender does not exist." 
-        }, 404
-    )}
+          success: false, 
+          error: "Sender does not exist." 
+        }, 
+        404
+      );
+    }
 
     const receiverDetails = await prisma.user.findUnique({
       where: { id: receiverId },
@@ -78,50 +81,60 @@ transactionRouter.post("/", zValidator("json", transactionSchema), async (c) => 
       return c.json({ success: false, error: "Insufficient balance." }, 400);
     }
 
+
     await prisma.$transaction(async () => {
+
+      await prisma.user.update({
+        where: { id: senderId },
+        data: { currentBalance: { decrement: amount } },
+      });
+
+      await prisma.user.update({
+        where: { id: receiverId },
+        data: { currentBalance: { increment: amount } },
+      });
+
+
+      const transactionRecord = await prisma.transactions.create({
+        data: {
+          senderId: senderId,
+          recieverId: receiverId,
+          amount: amount,
+          transactionId: ulid(),
+        },
+      });
+
+
+      if (amount >= 40) {
         await prisma.user.update({
           where: { id: senderId },
-          data: { currentBalance: { decrement: amount } },
+          data: { currentScore: { increment: amount } },
         });
-      
-        await prisma.user.update({
-          where: { id: receiverId },
-          data: { currentBalance: { increment: amount } },
-        });
-      
-        const transaction = await prisma.transactions.create({
-          data: {
-            senderId: senderId,
-            recieverId: receiverId,
-            transactionId: ulid(),
+      }
+
+      await prisma.user.update({
+        where: { id: senderId },
+        data: {
+          sendingTransaction: {
+            connect: { id: transactionRecord.id },
           },
-        });
-      
-        await prisma.user.update({
-          where: { id: senderId },
-          data: {
-            sendingTransaction: {
-              connect: { id: transaction.id },
-            },
+        },
+      });
+
+      await prisma.user.update({
+        where: { id: receiverId },
+        data: {
+          recievingTransactions: {
+            connect: { id: transactionRecord.id },
           },
-        });
-      
-        await prisma.user.update({
-          where: { id: receiverId },
-          data: {
-            recievingTransactions: {
-              connect: { id: transaction.id },
-            },
-          },
-        });
+        },
+      });
     });
 
     return c.json({
       success: true,
       message: "Transaction completed successfully.",
     });
-
-
   } catch (error: any) {
     console.error(error);
     return c.json(
