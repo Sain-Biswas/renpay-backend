@@ -19,13 +19,13 @@ model User {
   lastName       String
   email          String @unique
   password       String
-  currentBalance BigInt @default(0)
-  currentScore   BigInt @default(0)
+  currentBalance Int    @default(0)
+  currentScore   Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sendingTransaction   Transactions[] @relation("sended")
+  sendingTransaction    Transactions[] @relation("sended")
   recievingTransactions Transactions[] @relation("recieved")
 }
 
@@ -36,7 +36,8 @@ model Transactions {
 
   senderId   String @db.ObjectId
   recieverId String @db.ObjectId
-  amount     BigInt
+
+  amount Int
 
   sender   User @relation("sended", fields: [senderId], references: [id])
   reciever User @relation("recieved", fields: [recieverId], references: [id])
